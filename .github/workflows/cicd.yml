@@ -1,4 +1,4 @@
-name: Deploy Blinkit Dashboard
+name: Deploy Blinkit PowerBI Dashboard
 
 on:
   push:
@@ -10,12 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     - name: Checkout Repository
       uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
 
     - name: Install Power BI CLI
       run: |
         npm install -g powerbi-cli
+        echo "$(npm bin -g)" >> $GITHUB_PATH
+
+    - name: Verify CLI Installation
+      run: pbicli --version
 
     - name: Login to Power BI
       run: |
@@ -24,7 +34,7 @@ jobs:
         -p ${{ secrets.PBI_CLIENT_SECRET }} \
         -t ${{ secrets.PBI_TENANT_ID }}
 
-    - name: Deploy Dashboard
+    - name: Deploy Power BI Dashboard
       run: |
         pbicli import pbix \
         --file dashboard/blinkit_dashboard.pbix \
