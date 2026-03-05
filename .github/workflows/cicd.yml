@@ -1,0 +1,31 @@
+name: Deploy Blinkit Dashboard
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Install Power BI CLI
+      run: |
+        npm install -g powerbi-cli
+
+    - name: Login to Power BI
+      run: |
+        pbicli login --service-principal \
+        -u ${{ secrets.PBI_CLIENT_ID }} \
+        -p ${{ secrets.PBI_CLIENT_SECRET }} \
+        -t ${{ secrets.PBI_TENANT_ID }}
+
+    - name: Deploy Dashboard
+      run: |
+        pbicli import pbix \
+        --file dashboard/blinkit_dashboard.pbix \
+        --workspace ${{ secrets.PBI_WORKSPACE_ID }}
